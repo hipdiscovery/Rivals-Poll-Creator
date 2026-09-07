@@ -6,4 +6,4 @@ Windows app for weekly Marvel Rivals costume ranking pages.
 
 Get **Rivals-Poll-Creator-Windows.zip** from [Releases](https://github.com/hipdiscovery/Rivals-Poll-Creator/releases).
 
-Unzip → double-click `Rivals Poll Creator.bat`.
+Unzip → double-click `Rivals Poll Creator.exe`.
