@@ -55,6 +55,13 @@ if (!code.includes("__rpcEmmaAlias")) {
   code = code.replace(ownerMarker, ownerReplacement);
 }
 
+if (!code.includes("__rpcNormalizeOwnerLine")) {
+  const ownerLineMarker = "r&&(r=__rpcTitleCase(r))";
+  const ownerLineReplacement = "r&&(r=__rpcTitleCase(r),r=Fn(r)||r);let __rpcNormalizeOwnerLine=!0";
+  if (!code.includes(ownerLineMarker)) throw new Error("Owner line normalization marker did not match.");
+  code = code.replace(ownerLineMarker, ownerLineReplacement);
+}
+
 if (!code.includes("z(o).startsWith(z(r))")) {
   const defaultMarker = "o&&r&&z(o)===z(r)&&(r=`Default`)";
   const defaultReplacement = "o&&r&&(z(o)===z(r)||z(o).startsWith(z(r))||z(r).startsWith(z(o)))&&(r=`Default`)";
