@@ -9,6 +9,9 @@ if (!bundleName) throw new Error("Could not find the Rivals Poll Creator JavaScr
 const bundlePath = path.join(assets, bundleName);
 let code = fs.readFileSync(bundlePath, "utf8");
 
+// A versioned key prevents stale learned OCR results from surviving app upgrades.
+code = code.replace("rivals-poll-creator.memory.v1", "rivals-poll-creator.memory.v2");
+
 if (!code.includes("__rpcNativeOcr")) {
   const marker = "async function or(){await Wn()}async function sr(e,t){let n=Zn(e,t),r=await Wn();";
   const replacement = `const __rpcOcrPending=new Map;let __rpcOcrSequence=0;if(window.chrome?.webview){window.chrome.webview.addEventListener(\`message\`,event=>{let data=event.data;if(typeof data===\`string\`){try{data=JSON.parse(data)}catch{return}}if(data?.cmd!==\`ocr-result\`)return;let pending=__rpcOcrPending.get(data.requestId);if(!pending)return;__rpcOcrPending.delete(data.requestId);clearTimeout(pending.timer);pending.resolve(data.error?null:String(data.text??\`\`))})}function __rpcNativeOcr(canvas){if(!window.chrome?.webview||!canvas?.toDataURL)return Promise.resolve(null);let requestId=\`ocr-\${Date.now()}-\${++__rpcOcrSequence}\`;return new Promise(resolve=>{let timer=setTimeout(()=>{__rpcOcrPending.delete(requestId);resolve(null)},12e3);__rpcOcrPending.set(requestId,{resolve,timer});try{window.chrome.webview.postMessage({cmd:\`ocr\`,requestId,dataUrl:canvas.toDataURL(\`image/png\`)})}catch{clearTimeout(timer);__rpcOcrPending.delete(requestId);resolve(null)}})}function __rpcTitleCase(value){let small=new Set([\`a\`,\`an\`,\`and\`,\`of\`,\`the\`]);return value.replace(/[^A-Za-z0-9 &'’.-]+/g,\` \`).trim().toLowerCase().split(/\\s+/).map((word,index)=>{if(index&&small.has(word))return word;return word.split(\`-\`).map(part=>part?part[0].toUpperCase()+part.slice(1):part).join(\`-\`)}).join(\` \`).replace(/\\bX Men\\b/g,\`X-Men\`)}async function or(){if(!window.chrome?.webview)await Wn()}async function sr(e,t){let n=Zn(e,t),nativeText=await __rpcNativeOcr(n);if(nativeText&&nativeText.trim())return{text:nativeText.trim(),crop:n};let r=await Wn();`;
@@ -74,6 +77,18 @@ if (!code.includes("__rpcNormalizeLearnedEmma")) {
   const cacheReplacement = "return Array.isArray(t)?t.map(e=>/glittering goddess|dark diamond|golden grace/i.test(e.outfit)?{...e,character:`Emma Frost`}:e):[];let __rpcNormalizeLearnedEmma=!0";
   if (!code.includes(cacheMarker)) throw new Error("Learned OCR storage marker did not match.");
   code = code.replace(cacheMarker, cacheReplacement);
+}
+
+if (!code.includes("function __rpcNormalizeShot")) {
+  const mergeMarker = "function ii(e,t){return e.edited?{...t,character:e.character,outfit:e.outfit,rating:e.rating,backgroundOnly:e.backgroundOnly,confirmed:e.confirmed,edited:!0}:{...t,rating:e.rating,confirmed:e.confirmed,backgroundOnly:e.backgroundOnly||t.backgroundOnly}}";
+  const mergeReplacement = "function __rpcNormalizeShot(e){return/^(glittering goddess|dark diamond|golden grace)$/i.test((e.outfit||``).trim())?{...e,character:`Emma Frost`}:e}function ii(e,t){return __rpcNormalizeShot(e.edited?{...t,character:e.character,outfit:e.outfit,rating:e.rating,backgroundOnly:e.backgroundOnly,confirmed:e.confirmed,edited:!0}:{...t,rating:e.rating,confirmed:e.confirmed,backgroundOnly:e.backgroundOnly||t.backgroundOnly})}";
+  if (!code.includes(mergeMarker)) throw new Error("Shot merge normalization marker did not match.");
+  code = code.replace(mergeMarker, mergeReplacement);
+
+  const editMarker = "return{...n,...t,edited:r}}))";
+  const editReplacement = "return __rpcNormalizeShot({...n,...t,edited:r})}))";
+  if (!code.includes(editMarker)) throw new Error("Shot edit normalization marker did not match.");
+  code = code.replace(editMarker, editReplacement);
 }
 
 if (!code.includes("z(o).startsWith(z(r))")) {
