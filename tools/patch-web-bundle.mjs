@@ -91,6 +91,20 @@ if (!code.includes("function __rpcNormalizeShot")) {
   code = code.replace(editMarker, editReplacement);
 }
 
+if (!code.includes("function __rpcCoverCrop")) {
+  const coverMarker = "async function Zr(e){await Br();let t=document.createElement(`canvas`);t.width=br,t.height=xr;let n=t.getContext(`2d`);if(!n)throw Error(`Canvas is not available`);let r=Gr(e.background,`inspect`);n.drawImage(r,0,0),";
+  const coverReplacement = "function __rpcCoverCrop(e){let t=document.createElement(`canvas`);t.width=br,t.height=xr;let n=t.getContext(`2d`);if(!n)return e;let r=Math.min(e.width,Math.max(1,Math.round(e.height*br/xr))),i=Math.min(e.height,Math.max(1,Math.round(e.width*xr/br)));return r<e.width?n.drawImage(e,0,0,r,e.height,0,0,br,xr):n.drawImage(e,0,0,e.width,i,0,0,br,xr),t}async function Zr(e){await Br();let t=document.createElement(`canvas`);t.width=br,t.height=xr;let n=t.getContext(`2d`);if(!n)throw Error(`Canvas is not available`);let r=__rpcCoverCrop(e.background);n.drawImage(r,0,0),";
+  if (!code.includes(coverMarker)) throw new Error("Cover crop marker did not match.");
+  code = code.replace(coverMarker, coverReplacement);
+}
+
+if (!code.includes("`cutouts/${Qr(c[e],e)}`")) {
+  const exportMarker = "for(let e=0;e<r.length;e++)n.file(Qr(r[e],e+1),await ei(r[e].pageUrl));let i=e.shots.filter(e=>!e.backgroundOnly&&e.pollUrl);";
+  const exportReplacement = "for(let e=0;e<r.length;e++)n.file(Qr(r[e],e+1),await ei(r[e].pageUrl));let c=e.shots.filter(e=>!e.backgroundOnly&&e.cutoutUrl);for(let e=0;e<c.length;e++)n.file(`cutouts/${Qr(c[e],e)}`,await ei(c[e].cutoutUrl));let i=e.shots.filter(e=>!e.backgroundOnly&&e.pollUrl);";
+  if (!code.includes(exportMarker)) throw new Error("Cutout export marker did not match.");
+  code = code.replace(exportMarker, exportReplacement);
+}
+
 if (!code.includes("z(o).startsWith(z(r))")) {
   const defaultMarker = "o&&r&&z(o)===z(r)&&(r=`Default`)";
   const defaultReplacement = "o&&r&&(z(o)===z(r)||z(o).startsWith(z(r))||z(r).startsWith(z(o)))&&(r=`Default`)";
