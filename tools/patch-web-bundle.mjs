@@ -157,5 +157,51 @@ if (!code.includes('onAdjust:e=>void le(e)')) {
   code=code.replace(downloadMarker,downloadReplacement);
 }
 code = code.replaceAll('4.0.0', '4.1.0');
+
+// v4.2: preserve full outfits, expose useful image-edit controls, and show progress for long work.
+if (!code.includes('__rpcCutoutRegion')) {
+  const oldValue="async function hn(e,t){let n=Yt(t),r=an(e,n.x*e.width,n.y*e.height,n.w*e.width,n.h*e.height,1),i=await new Promise((e,t)=>{r.toBlob(n=>n?e(n):t(Error(`crop failed`)),`image/png`)}),";
+  const newValue="function __rpcCutoutRegion(e){let t=Yt(e),n=e===`shop`?.075:.06,r=Math.max(0,t.x-n),i=Math.max(0,t.y-.03),a=Math.min(1,t.x+t.w+n),o=.995;return{x:r,y:i,w:a-r,h:o-i}}function __rpcCutoutInput(e,t=1920){if(Math.max(e.width,e.height)<=t)return e;let n=t/Math.max(e.width,e.height),r=document.createElement(`canvas`);r.width=Math.max(1,Math.round(e.width*n)),r.height=Math.max(1,Math.round(e.height*n));let i=r.getContext(`2d`);return i?(i.imageSmoothingEnabled=!0,i.imageSmoothingQuality=`high`,i.drawImage(e,0,0,r.width,r.height),r):e}async function hn(e,t){let n=__rpcCutoutRegion(t),r=an(e,n.x*e.width,n.y*e.height,n.w*e.width,n.h*e.height,1);r=__rpcCutoutInput(r);let i=await new Promise((e,t)=>{r.toBlob(n=>n?e(n):t(Error(`crop failed`)),`image/png`)}),";
+  if (!code.includes(oldValue)) throw new Error('Full-body cutout marker did not match.');
+  code=code.replace(oldValue,newValue);
+}
+code=code.replace("'isnet-quint8-1.7:'","'isnet-quint8-1.7-fullbody-v3:'");
+if (!code.includes('async function __rpcCutoutCacheDelete')) {
+  const marker='}catch{}}\nasync function __rpcMapLimit';
+  const replacement='}catch{}}\nasync function __rpcCutoutCacheDelete(e){try{let t=await __rpcCutoutDb();if(!t)return;await new Promise(n=>{let r=t.transaction(\'cutouts\',\'readwrite\');r.objectStore(\'cutouts\').delete(__rpcCutoutCacheKey(e));r.oncomplete=()=>n();r.onerror=()=>n()})}catch{}}\nasync function __rpcMapLimit';
+  if (!code.includes(marker)) throw new Error('Cutout cache delete marker did not match.');
+  code=code.replace(marker,replacement);
+}
+if (!code.includes("k=y('Center',false)")) {
+  const oldValue="let y=(e,t)=>{let n=document.createElement('button');n.type='button';n.textContent=e;Object.assign(n.style,{border:'1px solid #3b4454',borderRadius:'10px',padding:'10px 14px',fontWeight:'650',cursor:'pointer',background:t?'#f4f6fa':'#222833',color:t?'#0d1118':'#f3f5f8'});return n},b=y('Reset',false),x=y('Cancel',false),S=y('Save framing',true);v.append(b,x,S);";
+  const newValue="let y=(e,t)=>{let n=document.createElement('button');n.type='button';n.textContent=e;Object.assign(n.style,{border:'1px solid #3b4454',borderRadius:'10px',padding:'10px 14px',fontWeight:'650',cursor:'pointer',background:t?'#f4f6fa':'#222833',color:t?'#0d1118':'#f3f5f8'});return n},b=y('Reset',false),k=y('Center',false),x=y('Cancel',false),S=y('Save framing',true);v.append(b,k,x,S);";
+  if (!code.includes(oldValue)) throw new Error('Editor center button marker did not match.');
+  code=code.replace(oldValue,newValue);
+  code=code.replace("b.onclick=()=>{a={x:0,y:0,scale:1};C()};x.onclick=()=>{s.remove();o(false)};","b.onclick=()=>{a={x:0,y:0,scale:1};C()};k.onclick=()=>{a.x=0;a.y=0;C()};x.onclick=()=>{s.remove();o(false)};");
+}
+if (!code.includes('Opening screenshots ${e+1} / ${i.length}')) {
+  __rpcPatchBetween('w=(0,T.useCallback)(async e=>',',te=(0,T.useCallback)',"w=(0,T.useCallback)(async e=>{let i=e.filter(e=>e.type.startsWith(`image/`));if(!i.length){p(`Use PNG or JPG screenshots from Marvel Rivals.`);return}p(null),n.length||kr(),s({label:`Opening screenshots`,progress:.02});try{let o=[];for(let e=0;e<i.length;e++)try{let q=await Er(i[e],[...n,...o]);o.push(q),r(e=>[...e,q]),t(`confirm`),!n.length&&o.length===1&&a(0),s({label:`Opening screenshots ${e+1} / ${i.length}`,progress:.05+.15*(e+1)/i.length})}catch{p(`Could not open ${i[e].name}`)}if(!o.length)return;let q=Array(o.length),done=0;await __rpcMapLimit(o,4,async(e,t)=>{try{q[t]=await Mr(e)}catch{q[t]={...e,status:`failed`}}finally{done++,s({label:`Analyzing screenshots ${done} / ${o.length}`,progress:.2+.3*done/o.length})}}),r(e=>e.map(e=>{let t=q.find(t=>t?.id===e.id);return t?ii(e,t):e}));let reading=q.filter(e=>e&&e.status===`reading`),readDone=0;for(let e=0;e<q.length;e++){let t=q[e];if(t&&t.status===`reading`){await $t();try{let n=await Nr(t);q[e]=n,r(e=>e.map(e=>e.id===n.id?ii(e,n):e))}catch{let n={...t,status:`ready`};q[e]=n,r(e=>e.map(e=>e.id===n.id?ii(e,n):e))}finally{readDone++,s({label:`Reading names ${readDone} / ${Math.max(1,reading.length)}`,progress:.5+.5*readDone/Math.max(1,reading.length)})}}}}finally{s(null)}},[n])");
+}
+if (!code.includes("me=async e=>{let t=e?.shot??e")) {
+  if (!code.includes("ae=async(e,t)=>{S(e.id,{rating:t}),await ie({...e,rating:t})},le=async e=>{if(e.id==='cover'){let t=n.find(e=>e.backgroundOnly)??n.find(e=>!e.notCostume);if(!t)return;if(await __rpcOpenPlacementEditor(t,'cover')){s({label:'Updating cover',progress:.5});try{let e=n.filter(e=>!e.backgroundOnly&&!e.notCostume).map(e=>({url:e.cutoutUrl??e.sourceUrl,name:e.character})),r=await Zr({background:await Zt(t.sourceUrl),backgroundShot:t,cutouts:e});on(c);l(r)}finally{s(null)}}return}if(e.shot&&await __rpcOpenPlacementEditor(e.shot,'rating')){s({label:'Updating page',progress:.5});try{await ie(e.shot)}finally{s(null)}}},oe=async()=>")) throw new Error('Editor/recut handler marker did not match.');
+  code=code.replace("ae=async(e,t)=>{S(e.id,{rating:t}),await ie({...e,rating:t})},le=async e=>{if(e.id==='cover'){let t=n.find(e=>e.backgroundOnly)??n.find(e=>!e.notCostume);if(!t)return;if(await __rpcOpenPlacementEditor(t,'cover')){s({label:'Updating cover',progress:.5});try{let e=n.filter(e=>!e.backgroundOnly&&!e.notCostume).map(e=>({url:e.cutoutUrl??e.sourceUrl,name:e.character})),r=await Zr({background:await Zt(t.sourceUrl),backgroundShot:t,cutouts:e});on(c);l(r)}finally{s(null)}}return}if(e.shot&&await __rpcOpenPlacementEditor(e.shot,'rating')){s({label:'Updating page',progress:.5});try{await ie(e.shot)}finally{s(null)}}},oe=async()=>","ae=async(e,t)=>{S(e.id,{rating:t}),await ie({...e,rating:t})},le=async e=>{let t=e?.shot??(e?.id==='cover'?(n.find(e=>e.backgroundOnly)??n.find(e=>!e.notCostume)):e);if(!t)return;let i=e?.id==='cover'||t.backgroundOnly?'cover':'rating';if(!await __rpcOpenPlacementEditor(t,i))return;if(i==='cover'){if(!c)return;s({label:'Updating cover',progress:.5});try{let e=n.filter(e=>!e.backgroundOnly&&!e.notCostume).map(e=>({url:e.cutoutUrl??e.sourceUrl,name:e.character})),r=await Zr({background:await Zt(t.sourceUrl),backgroundShot:t,cutouts:e});on(c);l(r)}finally{s(null)}return}if(t.pageUrl){s({label:'Updating page',progress:.5});try{await ie(t)}finally{s(null)}}},me=async e=>{let t=e?.shot??e;if(!t||t.backgroundOnly||t.notCostume)return;s({label:'Removing background',progress:.08});try{await __rpcCutoutCacheDelete(t),on(t.cutoutUrl),on(t.pollUrl);let i=await Fr({...t,cutoutUrl:null,pollUrl:null});if(!i)throw Error('Could not remove the background');let a={...t,...i},o=n.map(e=>e.id===a.id?a:e);r(o),s({label:'Updating cover',progress:.82});let u=o.find(e=>e.backgroundOnly)??o.find(e=>!e.notCostume),d=o.filter(e=>!e.backgroundOnly&&!e.notCostume).map(e=>({url:e.cutoutUrl??e.sourceUrl,name:e.character}));if(c&&u){let e=await Zr({background:await Zt(u.sourceUrl),backgroundShot:u,cutouts:d});on(c),l(e)}}catch(e){p(e instanceof Error?e.message:'Could not remove the background')}finally{s(null)}},oe=async()=>");
+}
+if (!code.includes('onAdjust:()=>void le(x)')) code=code.replace('onSelect:a,onPatch:S,onConfirm:ne,onBack:','onSelect:a,onPatch:S,onAdjust:()=>void le(x),onConfirm:ne,onBack:');
+if (!code.includes('onAdjust:q,onConfirm:l')) code=code.replace('function li({shots:e,active:t,current:n,reading:r,allNamed:i,onLast:a,outfitOptions:o,onSelect:s,onPatch:c,onConfirm:l,onBack:u,onRemove:d,onDelete:f})','function li({shots:e,active:t,current:n,reading:r,allNamed:i,onLast:a,outfitOptions:o,onSelect:s,onPatch:c,onAdjust:q,onConfirm:l,onBack:u,onRemove:d,onDelete:f})');
+if (!code.includes('children:`Adjust image`')) {
+  const marker='children:[(0,R.jsx)(It,{type:`button`,variant:`secondary`,onClick:()=>d(n.id),children:`Skip this one`}),(0,R.jsx)(It,{type:`button`,variant:`secondary`,onClick:()=>f(n.id),children:`Delete screenshot`})]';
+  const replacement='children:[(0,R.jsx)(It,{type:`button`,variant:`secondary`,onClick:q,children:`Adjust image`}),(0,R.jsx)(It,{type:`button`,variant:`secondary`,onClick:()=>d(n.id),children:`Skip this one`}),(0,R.jsx)(It,{type:`button`,variant:`secondary`,onClick:()=>f(n.id),children:`Delete screenshot`})]';
+  if (!code.includes(marker)) throw new Error('Check-screen editor button marker did not match.');
+  code=code.replace(marker,replacement);
+}
+if (!code.includes('onRecut:e=>void me(e)')) code=code.replace('costumes:b,onRating:(e,t)=>void ae(e,t),onAdjust:e=>void le(e),onDownload:()=>void oe()','costumes:b,onRating:(e,t)=>void ae(e,t),onAdjust:e=>void le(e),onRecut:e=>void me(e),onDownload:()=>void oe()');
+if (!code.includes('onRecut:__rpcRecut')) code=code.replace('function di({pages:e,reviewIndex:t,setReviewIndex:n,costumes:r,onRating:i,onAdjust:__rpcAdjust,onDownload:a})','function di({pages:e,reviewIndex:t,setReviewIndex:n,costumes:r,onRating:i,onAdjust:__rpcAdjust,onRecut:__rpcRecut,onDownload:a})');
+if (!code.includes('children:`Redo background removal`')) {
+  const marker='(0,R.jsx)(It,{className:`mt-6 w-full`,variant:`secondary`,size:`lg`,onClick:()=>__rpcAdjust(o),children:`Adjust framing`}),(0,R.jsxs)(It,{className:`mt-3 w-full`,size:`lg`,onClick:a,children:[';
+  const replacement='(0,R.jsx)(It,{className:`mt-6 w-full`,variant:`secondary`,size:`lg`,onClick:()=>__rpcAdjust(o),children:`Adjust framing`}),s?(0,R.jsx)(It,{className:`mt-3 w-full`,variant:`secondary`,size:`lg`,onClick:()=>__rpcRecut(o),children:`Redo background removal`}):null,(0,R.jsxs)(It,{className:`mt-3 w-full`,size:`lg`,onClick:a,children:[';
+  if (!code.includes(marker)) throw new Error('Review background-removal button marker did not match.');
+  code=code.replace(marker,replacement);
+}
+code=code.replaceAll('4.1.0','4.2.0');
 fs.writeFileSync(bundlePath, code);
 console.log(`Patched ${bundlePath}`);
