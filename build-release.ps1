@@ -29,6 +29,8 @@ It is unsigned, so Windows SmartScreen may show an unrecognized-app warning.
 Set-Content -LiteralPath (Join-Path $publish "README.txt") -Value $readme -Encoding UTF8
 
 if (Test-Path -LiteralPath $package) { Remove-Item -LiteralPath $package -Force }
-Compress-Archive -Path (Join-Path $publish "*") -DestinationPath $package -CompressionLevel Optimal
+Compress-Archive -Path @(
+    (Join-Path $publish "Rivals Poll Creator.exe"),
+    (Join-Path $publish "README.txt")
+) -DestinationPath $package -CompressionLevel Optimal
 Get-FileHash -LiteralPath $package -Algorithm SHA256
-
