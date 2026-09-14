@@ -70,14 +70,10 @@ if (!code.includes("__rpcEmmaOutfitOwner")) {
 }
 
 if (!code.includes("__rpcNormalizeLearnedEmma")) {
-  const learnedMarker = "if(r)return{character:r.character,outfit:r.outfit};if(e.swatchIndex!=null){let r=n.find";
-  const learnedReplacement = "if(r){let __rpcNormalizeLearnedEmma=!0;return{character:/glittering goddess|dark diamond|golden grace/i.test(r.outfit)?`Emma Frost`:r.character,outfit:r.outfit}}if(e.swatchIndex!=null){let r=n.find";
-  if (!code.includes(learnedMarker)) throw new Error("Learned OCR cache marker did not match.");
-  code = code.replace(learnedMarker, learnedReplacement);
-  const swatchMarker = "if(r)return{character:r.character,outfit:r.outfit}}return null}var Cn=";
-  const swatchReplacement = "if(r){return{character:/glittering goddess|dark diamond|golden grace/i.test(r.outfit)?`Emma Frost`:r.character,outfit:r.outfit}}return null}var Cn=";
-  if (!code.includes(swatchMarker)) throw new Error("Swatch OCR cache marker did not match.");
-  code = code.replace(swatchMarker, swatchReplacement);
+  const cacheMarker = "return Array.isArray(t)?t:[]";
+  const cacheReplacement = "return Array.isArray(t)?t.map(e=>/glittering goddess|dark diamond|golden grace/i.test(e.outfit)?{...e,character:`Emma Frost`}:e):[];let __rpcNormalizeLearnedEmma=!0";
+  if (!code.includes(cacheMarker)) throw new Error("Learned OCR storage marker did not match.");
+  code = code.replace(cacheMarker, cacheReplacement);
 }
 
 if (!code.includes("z(o).startsWith(z(r))")) {
