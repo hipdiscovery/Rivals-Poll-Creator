@@ -14,9 +14,9 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>Rivals Poll Creator</AssemblyName>
     <RootNamespace>RivalsPollCreator</RootNamespace>
-    <Version>4.0.0</Version>
-    <FileVersion>4.0.0.0</FileVersion>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <Version>4.0.1</Version>
+    <FileVersion>4.0.1.0</FileVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
     <Product>Rivals Poll Creator</Product>
     <Description>Marvel Rivals costume ranking image creator</Description>
   </PropertyGroup>

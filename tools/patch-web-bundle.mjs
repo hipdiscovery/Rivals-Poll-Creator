@@ -30,6 +30,27 @@ if (!code.includes("AWDAZE")) {
   code = code.replace(normalizationMarker, normalizationReplacement);
 }
 
+if (!code.includes("SAVAGESWIRREL")) {
+  const normalizationMarker = "replace(/PA\\s*TEL\\s*PEAC|TEL\\s*PEAC/gi,`PASTEL PEACE`).replace(/AWDAZE|D[\\s._-]*AWDAZE/gi,`DREAMY DAZE`).replace(/D[\\s._-]*AWDLIO|AWDLIO/gi,`DREAMY DUO`)";
+  const normalizationReplacement = normalizationMarker + ".replace(/SAVAGE\\s*SWIRREL/gi,`SAVAGE SQUIRREL`).replace(/FORE\\s*R/gi,`GLITTERING GODDESS`).replace(/GO\\s*TEMPLE/gi,`GOLDEN GRACE`).replace(/COSTW\\s*COLOR\\s*UTTERING\\s*COUESS|UTTERING\\s*COUESS/gi,`DARK DIAMOND`)";
+  if (!code.includes(normalizationMarker)) throw new Error("Extended colorway normalization marker did not match.");
+  code = code.replace(normalizationMarker, normalizationReplacement);
+}
+
+if (!code.includes("__rpcEmmaAlias")) {
+  const ownerMarker = "function Fn(e){let t=z(e);if(!t)return null;";
+  const ownerReplacement = "function Fn(e){let t=z(e);if(!t)return null;if((t.includes(`enni`)&&t.includes(`frost`))||t===`cmm`){let __rpcEmmaAlias=!0;return`Emma Frost`}";
+  if (!code.includes(ownerMarker)) throw new Error("Owner alias marker did not match.");
+  code = code.replace(ownerMarker, ownerReplacement);
+}
+
+if (!code.includes("z(o).startsWith(z(r))")) {
+  const defaultMarker = "o&&r&&z(o)===z(r)&&(r=`Default`)";
+  const defaultReplacement = "o&&r&&(z(o)===z(r)||z(o).startsWith(z(r))||z(r).startsWith(z(o)))&&(r=`Default`)";
+  if (!code.includes(defaultMarker)) throw new Error("Default outfit marker did not match.");
+  code = code.replace(defaultMarker, defaultReplacement);
+}
+
 if (!code.includes("__rpcFutureCatalog")) {
   const start = "function Vn(e){let t=e.split(/\\n+/).filter(e=>!/celestial messenger|temple protectors|pajama party|savage land|year one|first appears|inspired by|requires luxury/i.test(e)).join(`\n`),n=z(t),r=In(t);";
   const replacement = "function Vn(e){let t=e.split(/\\n+/).filter(e=>!/celestial messenger|temple protectors|pajama party|savage land|year one|first appears|inspired by|requires luxury/i.test(e)).join(`\n`),__rpcFutureCatalog=!0,n=z(t),r=In(t);";
@@ -42,7 +63,7 @@ if (!code.includes("__rpcFutureCatalog")) {
   code = code.replace(catalogFallback, catalogReplacement);
 
   const ownerFallback = "return a&&(o=Fn(a[1])),o||=Fn(t),r&&!o&&(o=Rn(r)),{character:o||``,outfit:r||``}}";
-  const ownerReplacement = "return a&&(o=Fn(a[1])||__rpcTitleCase(a[1])),o||=Fn(t),r&&!o&&(o=Rn(r)),o&&r&&z(o)===z(r)&&(r=`Default`),{character:o||``,outfit:r||``}}";
+  const ownerReplacement = "return a&&(o=Fn(a[1])||__rpcTitleCase(a[1])),o||=Fn(t),r&&!o&&(o=Rn(r)),o&&r&&(z(o)===z(r)||z(o).startsWith(z(r))||z(r).startsWith(z(o)))&&(r=`Default`),{character:o||``,outfit:r||``}}";
   if (!code.includes(ownerFallback)) throw new Error("Generic owner fallback marker did not match.");
   code = code.replace(ownerFallback, ownerReplacement);
 }
