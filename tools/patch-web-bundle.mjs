@@ -62,6 +62,13 @@ if (!code.includes("__rpcNormalizeOwnerLine")) {
   code = code.replace(ownerLineMarker, ownerLineReplacement);
 }
 
+if (!code.includes("__rpcEmmaOutfitOwner")) {
+  const resultMarker = "{character:o||``,outfit:r||``}}";
+  const resultReplacement = "{character:(/glittering goddess|dark diamond|golden grace/i.test(r)?`Emma Frost`:o)||``,outfit:r||``};let __rpcEmmaOutfitOwner=!0}";
+  if (!code.includes(resultMarker)) throw new Error("Final recognition result marker did not match.");
+  code = code.replace(resultMarker, resultReplacement);
+}
+
 if (!code.includes("z(o).startsWith(z(r))")) {
   const defaultMarker = "o&&r&&z(o)===z(r)&&(r=`Default`)";
   const defaultReplacement = "o&&r&&(z(o)===z(r)||z(o).startsWith(z(r))||z(r).startsWith(z(o)))&&(r=`Default`)";
