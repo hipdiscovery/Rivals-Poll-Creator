@@ -30,9 +30,9 @@ if (!code.includes("AWDAZE")) {
   code = code.replace(normalizationMarker, normalizationReplacement);
 }
 
-if (!code.includes("COSTW.*?COU(?:ESS|OESS)")) {
+if (!code.includes("ENNI.*?FROST")) {
   const normalizationMarker = "replace(/PA\\s*TEL\\s*PEAC|TEL\\s*PEAC/gi,`PASTEL PEACE`).replace(/AWDAZE|D[\\s._-]*AWDAZE/gi,`DREAMY DAZE`).replace(/D[\\s._-]*AWDLIO|AWDLIO/gi,`DREAMY DUO`)";
-  const normalizationReplacement = normalizationMarker + ".replace(/SAVAGE\\s*SWIRREL/gi,`SAVAGE SQUIRREL`).replace(/FORE\\s*R/gi,`GLITTERING GODDESS`).replace(/GO\\s*TEMPLE/gi,`GOLDEN GRACE`).replace(/COSTW.*?COU(?:ESS|OESS)|UTTERING.*?COU(?:ESS|OESS)/gi,`DARK DIAMOND`).replace(/ENNI['’]?I?\\s*FROST/gi,`EMMA FROST`).replace(/\\bCMM\\b/gi,`EMMA FROST`)";
+  const normalizationReplacement = normalizationMarker + ".replace(/SAVAGE\\s*SWIRREL/gi,`SAVAGE SQUIRREL`).replace(/FORE\\s*R/gi,`GLITTERING GODDESS`).replace(/GO\\s*TEMPLE/gi,`GOLDEN GRACE`).replace(/COSTW.*?COU(?:ESS|OESS)|UTTERING.*?COU(?:ESS|OESS)/gi,`DARK DIAMOND`).replace(/ENNI.*?FROST/gi,`EMMA FROST`).replace(/\\bCMM\\b/gi,`EMMA FROST`)";
   if (!code.includes(normalizationMarker)) throw new Error("Extended colorway normalization marker did not match.");
   code = code.replace(normalizationMarker, normalizationReplacement);
 }
