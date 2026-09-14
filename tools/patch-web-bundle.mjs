@@ -37,6 +37,17 @@ if (!code.includes("SAVAGESWIRREL")) {
   code = code.replace(normalizationMarker, normalizationReplacement);
 }
 
+if (!code.includes("Check detected name")) {
+  const thumbMarker = "type:`button`,onClick:()=>s(n),\"aria-label\":e.backgroundOnly?`Cover background`:e.character||e.fileName";
+  const thumbReplacement = "type:`button`,onClick:()=>s(n),title:e.character&&e.outfit?`${e.character} — ${e.outfit}`:e.character||e.fileName,\"aria-label\":e.backgroundOnly?`Cover background`:e.character||e.fileName";
+  if (!code.includes(thumbMarker)) throw new Error("Thumbnail tooltip marker did not match.");
+  code = code.replace(thumbMarker, thumbReplacement);
+  const panelMarker = "n.notCostume?(0,R.jsx)(`p`,{className:`mb-3 rounded-xl bg-surface-2 px-4 py-3 text-sm ring-1 ring-border`,children:`This is not a costume (emote / gift / MVP). Skip it or delete the screenshot.`}):null,(0,R.jsxs)(`label`";
+  const panelReplacement = "n.notCostume?(0,R.jsx)(`p`,{className:`mb-3 rounded-xl bg-surface-2 px-4 py-3 text-sm ring-1 ring-border`,children:`This is not a costume (emote / gift / MVP). Skip it or delete the screenshot.`}):null,n.status===`ready`&&!n.confirmed&&!n.backgroundOnly&&!n.notCostume?(0,R.jsx)(`p`,{className:`mb-3 rounded-xl bg-accent/15 px-4 py-3 text-sm text-accent ring-1 ring-accent/30`,children:`Check detected name before continuing.`}):null,(0,R.jsxs)(`label`";
+  if (!code.includes(panelMarker)) throw new Error("Review cue marker did not match.");
+  code = code.replace(panelMarker, panelReplacement);
+}
+
 if (!code.includes("__rpcEmmaAlias")) {
   const ownerMarker = "function Fn(e){let t=z(e);if(!t)return null;";
   const ownerReplacement = "function Fn(e){let t=z(e);if(!t)return null;if((t.includes(`enni`)&&t.includes(`frost`))||t===`cmm`){let __rpcEmmaAlias=!0;return`Emma Frost`}";
