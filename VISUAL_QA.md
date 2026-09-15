@@ -6,6 +6,7 @@ UI changes are not verified by source review alone.
 - Routine QA must not depend on a persistent process on Troy's PC: no always-on local server, installer, startup service, Cloudflare Tunnel, or command window left open.
 - Avoid usage-metered browser-rendering services for normal iteration.
 - Keep private source, credentials, tokens, cookies, and secrets out of the public QA repo. The runner should visit public/safe URLs only.
+- The shared runner only accepts targets explicitly allowlisted in `hipdiscovery/visual-qa/qa/targets.json`. Never add arbitrary-URL, auth-header, cookie, or private-preview shortcuts just to make a project render.
 - For native or localhost-only UI that the shared runner cannot reach, use the project's own simulator/browser-source/UI-test screenshots and inspect those instead. Do not claim the public browser runner verified a surface it cannot render.
 - Automated layout/accessibility tests are a second layer, not a substitute for looking at the rendered UI.
 - If the shared runner is unavailable, say visual verification was unavailable rather than claiming a visual pass.
