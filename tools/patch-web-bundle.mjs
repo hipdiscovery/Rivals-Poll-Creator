@@ -229,8 +229,24 @@ code=code.replaceAll('4.3.0','4.4.0');
 
 // Keep the long-running export understandable at a glance: show a five-task
 // phase indicator and the current screenshot name in the centered progress card.
-code=code.replaceAll("label:'Making rating pages '+done+' / '+a.length", "label:'Task 3 of 5 · Rating page '+done+' / '+a.length+' — '+(n.character||n.fileName||'screenshot')");
-code=code.replaceAll("label:'Cutting costumes '+cutDone+' / '+a.length", "label:'Task 4 of 5 · Cutting '+cutDone+' / '+a.length+' — '+(t.character||t.fileName||'screenshot')");
+code=code.replaceAll("label:'Making rating pages '+done+' / '+a.length", "preview:n.sourceUrl,label:'Task 3 of 5 · Rating page '+done+' / '+a.length+' — '+(n.character||n.fileName||'screenshot')");
+code=code.replaceAll("label:'Cutting costumes '+cutDone+' / '+a.length", "preview:t.sourceUrl,label:'Task 4 of 5 · Cutting '+cutDone+' / '+a.length+' — '+(t.character||t.fileName||'screenshot')");
 code=code.replaceAll("label:'Making the cover'", "label:'Task 5 of 5 · Making the cover'");
+code=code.replaceAll("s({label:'Task 3 of 5 · Rating page'", "s({preview:n.sourceUrl,label:'Task 3 of 5 · Rating page'");
+code=code.replaceAll("s({label:'Task 4 of 5 · Cutting'", "s({preview:t.sourceUrl,label:'Task 4 of 5 · Cutting'");
+// The minified production bundle already contains the task labels after the
+// earlier replacements. Add the live source image to those progress updates
+// as well, so the overlay can show what is being processed.
+code=code.replaceAll("s({label:'Task 3 of 5 · Rating page '+done", "s({preview:n.sourceUrl,label:'Task 3 of 5 · Rating page '+done");
+code=code.replaceAll("s({label:'Task 4 of 5 · Cutting '+cutDone", "s({preview:t.sourceUrl,label:'Task 4 of 5 · Cutting '+cutDone");
+
+// v4.5: make progress feel active and readable during long OCR/cutout runs.
+{
+  const oldValue='function fi({work:e}){let t=Math.max(4,Math.min(100,Math.round(e.progress*100)));return(0,R.jsx)(`div`,{className:`fixed inset-0 z-40 grid place-items-center bg-bg/80`,children:(0,R.jsxs)(`div`,{className:`w-full max-w-sm rounded-2xl bg-surface p-6 ring-1 ring-border`,children:[(0,R.jsxs)(`div`,{className:`flex items-center gap-3`,children:[(0,R.jsx)(ce,{className:`size-5 animate-spin`}),(0,R.jsx)(`p`,{className:`text-sm font-medium`,children:e.label})]}),(0,R.jsx)(`div`,{className:`mt-4 h-1.5 overflow-hidden rounded-full bg-surface-2`,children:(0,R.jsx)(`div`,{className:`h-full rounded-full bg-primary transition-[width] duration-200 ease-out`,style:{width:`${t}%`}})})]})})}';
+  const newValue='function fi({work:e}){let t=Math.max(4,Math.min(100,Math.round(e.progress*100))),n=T.useRef(Date.now()),r=e.label||`Working`,i=r.split(` · `),a=i[0],o=i.slice(1).join(` · `),s=e.progress>.03?Math.max(1,Math.ceil((Date.now()-n.current)/1000*(1-e.progress)/e.progress)):null;return(0,R.jsx)(`div`,{className:`fixed inset-0 z-40 grid place-items-center bg-bg/80`,children:(0,R.jsxs)(`div`,{className:`w-full max-w-sm rounded-2xl bg-surface p-6 ring-1 ring-border`,children:[(0,R.jsx)(`p`,{className:`text-center text-xs font-semibold uppercase tracking-widest text-muted`,children:a}),(0,R.jsx)(`p`,{className:`mt-2 text-center text-sm font-medium text-fg`,children:o||r}),(0,R.jsx)(`p`,{className:`mt-1 text-center text-xs text-muted`,children:s?`About ${s}s remaining`:`Estimating time remaining…`}),(0,R.jsx)(`div`,{className:`mt-4 h-2 overflow-hidden rounded-full bg-surface-2`,children:(0,R.jsx)(`div`,{className:`h-full rounded-full bg-primary transition-[width] duration-200 ease-out`,style:{width:`${t}%`}})}),e.preview?(0,R.jsx)(`img`,{src:e.preview,alt:`Current screenshot being edited`,className:`mt-4 h-28 w-full rounded-xl object-cover ring-1 ring-border opacity-90`}):null]})})}';
+  if (code.includes(oldValue)) code=code.replace(oldValue,newValue);
+  else if (!code.includes('About ${s}s remaining')) throw new Error('Progress card marker did not match.');
+}
+code=code.replaceAll('4.4.0','4.5.0');
 fs.writeFileSync(bundlePath, code);
 console.log(`Patched ${bundlePath}`);
