@@ -214,5 +214,23 @@ code=code.replaceAll('4.1.0','4.2.0');
   else if (!code.includes(newValue)) throw new Error('Cover row-layout marker did not match.');
 }
 code=code.replaceAll('4.2.0','4.3.0');
+
+// v4.4: avoid shadowing the cover canvas context in the lineup loop.
+// The old loop used `n` for both the canvas context and the current row; on
+// the final export that made `n.save()` call Array.save and abort the run.
+{
+  const oldValue='let t=e*o,n=i.slice(t,Math.min(a,t+o)),r=n.length';
+  const newValue='let t=e*o,items=i.slice(t,Math.min(a,t+o)),r=items.length';
+  if (code.includes(oldValue)) code=code.replace(oldValue,newValue);
+  if (code.includes('let t=n[e],r=Math.min')) code=code.replace('let t=n[e],r=Math.min','let t=items[e],r=Math.min');
+  if (!code.includes('let t=e*o,items=i.slice') || !code.includes('let t=items[e],r=Math.min')) throw new Error('Cover context-shadow fix did not match.');
+}
+code=code.replaceAll('4.3.0','4.4.0');
+
+// Keep the long-running export understandable at a glance: show a five-task
+// phase indicator and the current screenshot name in the centered progress card.
+code=code.replaceAll("label:'Making rating pages '+done+' / '+a.length", "label:'Task 3 of 5 · Rating page '+done+' / '+a.length+' — '+(n.character||n.fileName||'screenshot')");
+code=code.replaceAll("label:'Cutting costumes '+cutDone+' / '+a.length", "label:'Task 4 of 5 · Cutting '+cutDone+' / '+a.length+' — '+(t.character||t.fileName||'screenshot')");
+code=code.replaceAll("label:'Making the cover'", "label:'Task 5 of 5 · Making the cover'");
 fs.writeFileSync(bundlePath, code);
 console.log(`Patched ${bundlePath}`);
