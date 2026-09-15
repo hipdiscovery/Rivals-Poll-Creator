@@ -203,5 +203,16 @@ if (!code.includes('children:`Redo background removal`')) {
   code=code.replace(marker,replacement);
 }
 code=code.replaceAll('4.1.0','4.2.0');
+
+// v4.3: keep large lineups legible without moving the reference-locked cover furniture.
+// Seven costumes per row is the practical upper bound in the 1020px-wide lineup zone;
+// larger rows made full-body cutouts too small to identify in the exported cover.
+{
+  const oldValue='let s=a<=6?1:a<=22?2:Math.ceil(a/11),o=Math.ceil(a/s),c=805,l=1218,u=(l-c)/s;';
+  const newValue='let s=a<=6?1:a<=12?2:a<=21?3:Math.ceil(a/7),o=Math.ceil(a/s),c=805,l=1218,u=(l-c)/s;';
+  if (code.includes(oldValue)) code=code.replace(oldValue,newValue);
+  else if (!code.includes(newValue)) throw new Error('Cover row-layout marker did not match.');
+}
+code=code.replaceAll('4.2.0','4.3.0');
 fs.writeFileSync(bundlePath, code);
 console.log(`Patched ${bundlePath}`);
