@@ -2,15 +2,15 @@
 
 This repository ships the Windows app and a checked-in web bundle. Read `README.md` and locate the source-of-truth in `tools/patch-web-bundle.mjs` before editing hashed bundle assets.
 
-## GitHub is the source of truth
+## GitHub is the handoff
 
-A local zip is not a release. Do not leave Troy with the only copy on disk.
+Troy switches between ChatGPT and Grok when usage runs out. Neither model sees the other chat. **GitHub `main` is the only shared memory.**
 
-- After every landed code change: commit and push `main`. Done means GitHub has the source, not a zip on the desktop.
-- Do **not** cut a GitHub Release for each bugfix. Releases are only when the app version bumps (`RivalsPollCreator.csproj` / `build-release.ps1`, example: 4.6.1 → 4.6.2).
-- On a version bump: publish GitHub Release tag `vX.Y.Z` and attach `Rivals-Poll-Creator-Windows.zip`. Source version and zip README version must match.
-- Never commit the 190MB+ exe into the tree. It exceeds GitHub's 100MB file limit. Binaries go on the Release only.
-- Do not turn on metered CI.
+1. Start: `git pull` (or read current `main`). Do not trust a local zip, a prior chat, or a stale checkout.
+2. Work against the files on `main`.
+3. Stop: commit + push `main` before you end. If you cannot push, say that in one line — do not leave the only copy in the chat or on disk.
+4. Releases only when version bumps (`RivalsPollCreator.csproj` / `build-release.ps1`). Tag `vX.Y.Z`, attach `Rivals-Poll-Creator-Windows.zip`. No release per bugfix.
+5. Never commit the 190MB+ exe. It exceeds GitHub's file limit. No metered CI.
 
 - `src/RivalsPollCreator/MainForm.cs`, `Program.cs`, `*.csproj`: Windows/.NET packaging expert; preserve WebView/desktop lifecycle, offline startup and clean ZIP exports.
 - `src/RivalsPollCreator/NativeOcrService.cs`, `www/tess/**`: OCR specialist; compare title and owner evidence, distinguish default/colorway/outfit, allow manual correction, never silently manufacture names.
