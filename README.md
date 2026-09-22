@@ -2,9 +2,15 @@
 
 Windows desktop app for turning Marvel Rivals costume screenshots into portrait rating pages and a lineup cover.
 
+Current packaged build: **4.6.1**.
+
 ## Download
 
-Download **Rivals-Poll-Creator-Windows.zip** from [Releases](https://github.com/hipdiscovery/Rivals-Poll-Creator/releases), unzip the whole folder, and double-click `Rivals Poll Creator.exe`.
+Download **Rivals-Poll-Creator-Windows.zip** from [Releases](https://github.com/hipdiscovery/Rivals-Poll-Creator/releases).
+
+Latest GitHub-attached binary is still **v4.5.0**. The 4.6.1 Windows zip is the newer local package; attach it to a `v4.6.1` release to replace that.
+
+Unzip the whole folder and double-click `Rivals Poll Creator.exe`.
 
 ## Workflow
 
@@ -26,8 +32,6 @@ Prerequisites: Windows 10/11, Node.js, and the .NET 8 SDK.
 The build is self-contained and unsigned. The shipped application does not start PowerShell or a local HTTP server.
 
 ## OCR regression test
-
-The repository includes a 21-case manifest covering Battle Pass, Shop, Customize, Hero Profile, colorways, and a Default costume. With the matching local screenshots available:
 
 ```powershell
 dotnet run --project .\tests\RivalsPollCreator.OcrHarness -- .\tests\fixtures\manifest.json "C:\path\to\Screenshots"
